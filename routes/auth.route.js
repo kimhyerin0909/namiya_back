@@ -9,12 +9,11 @@ router.post("/login", (req, res) => {
   const pw = encryption(password);
 
   db.query(`SELECT * FROM User WHERE email = "${email}" AND password = "${pw}";`, (err, rows) => {
-    if (rows.length < 1) res.json({ message: "로그인에 실패했습니다.", status: 406 });
+    if (rows.length < 1) res.status(406).json({ message: "로그인에 실패했습니다." });
     else if (rows.length === 1)
-      res.json({
+      res.status(200).json({
         user: req.body,
         message: "로그인에 성공했습니다!",
-        status: 200,
         accessToken: generateAccessToken(email),
         refreshToken: generateRefreshToken(email),
       });
@@ -26,14 +25,13 @@ router.post("/signup", (req, res) => {
   const pw = encryption(password);
 
   db.query(`SELECT * FROM User WHERE email = "${email}"`, (err, rows) => {
-    if (rows.length > 0) res.json({ message: "중복된 이메일입니다.", status: 406 });
+    if (rows.length > 0) res.status(406).json({ message: "중복된 이메일입니다." });
     else {
       db.query(`INSERT INTO User VALUES (0, "${nickname}", "${email}", "${pw}");`, (err, rows) => {
         if (err) console.log(err);
-        res.json({
+        resstatus(200).json({
           user: req.body,
           message: "회원가입에 성공했습니다!",
-          status: 200,
           accessToken: generateAccessToken(email),
           refreshToken: generateRefreshToken(email),
         });
