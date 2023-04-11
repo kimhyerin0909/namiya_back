@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const encryption = require("../util/auth/encryption");
 const db = require("../config/db.config");
+const jwtController = require("../controller/jwt.controller");
 const generateAccessToken = require("../util/auth/generateAccessToken");
 const generateRefreshToken = require("../util/auth/generateRefreshToken");
 
@@ -38,6 +39,10 @@ router.post("/signup", (req, res) => {
       });
     }
   });
+});
+
+router.get("/reissuanceToken", (req, res) => {
+  jwtController.reissuanceToken(res, req.headers.authorization.split(" ")[1]);
 });
 
 module.exports = router;
