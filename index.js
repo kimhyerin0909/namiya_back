@@ -11,4 +11,4 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/auth", require("./routes/auth.route"));
-app.use("/worry", require("./routes/worry.route"));
+app.use("/letter", require("./routes/letter.route"));
