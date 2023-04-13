@@ -27,7 +27,7 @@ module.exports = {
     try {
       let payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
       return res.json({
-        accessToken: generateAccessToken(payload.email),
+        accessToken: generateAccessToken(payload.userId),
         message: "토큰이 발급되었습니다.",
       });
     } catch (err) {
