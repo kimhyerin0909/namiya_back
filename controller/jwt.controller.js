@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const generateAccessToken = require("../util/auth/generateAccessToken");
 
 module.exports = {
-  checkJWT: (res, authorization) => {
+  checkJWT: (res, authorization, userId) => {
     if (!authorization) {
       return res.status(401).json({
         message: "로그인이 필요합니다.",
@@ -11,12 +11,15 @@ module.exports = {
 
     try {
       let payload = jwt.verify(authorization, process.env.ACCESS_TOKEN_SECRET);
-      return res.json({ payload: payload, message: "검증되었습니다." });
+      if (payload.userId !== Number(userId)) {
+        res.status(403).json({ message: "접근할 수 없습니다." });
+        return false;
+      } else return true;
     } catch (err) {
       if (err.name === "TokenExpiredError") {
-        return res.status(401).json({ message: "만료된 토큰입니다." });
-      }
-      return res.status(405).json({ message: err.name });
+        res.status(401).json({ message: "만료된 토큰입니다." });
+      } else res.status(405).json({ message: err.name });
+      return false;
     }
   },
 
