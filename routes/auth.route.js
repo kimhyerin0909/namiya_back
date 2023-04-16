@@ -11,12 +11,13 @@ router.post("/login", (req, res) => {
 
   db.query(`SELECT * FROM User WHERE email = "${email}" AND password = "${pw}";`, (err, rows) => {
     if (rows.length < 1) return res.status(406).json({ message: "로그인에 실패했습니다." });
-    return res.status(200).json({
-      user: rows[0],
-      message: "로그인에 성공했습니다!",
-      accessToken: generateAccessToken(rows[0].userId),
-      refreshToken: generateRefreshToken(rows[0].userId),
-    });
+    else
+      res.status(200).json({
+        user: rows[0],
+        message: "로그인에 성공했습니다!",
+        accessToken: generateAccessToken(rows[0].userId),
+        refreshToken: generateRefreshToken(rows[0].userId),
+      });
   });
 });
 
@@ -32,8 +33,8 @@ router.post("/signup", (req, res) => {
         return res.status(200).json({
           user: rows[0],
           message: "회원가입에 성공했습니다!",
-          accessToken: generateAccessToken(rows[0].userId),
-          refreshToken: generateRefreshToken(rows[0].userId),
+          accessToken: generateAccessToken(rows.insertId),
+          refreshToken: generateRefreshToken(rows.insertId),
         });
       });
     }
