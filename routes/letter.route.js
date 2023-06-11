@@ -6,6 +6,21 @@ const schedule = require("node-schedule");
 const today = new Date();
 const todayStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
+schedule.scheduleJob("0 44 21 * * *", () => {
+  db.query(`SELECT * FROM Letter WHERE DATEDIFF(sendAt, '${todayStr}') = 0`, (err, rows) => {
+    db.query(
+      `UPDATE Letter SET replyUserId = ${rows[rows.length - 1].userId} WHERE userId = ${
+        rows[0].userId
+      }`
+    );
+    for (let i = 1; i < rows.length; i++) {
+      db.query(
+        `UPDATE Letter SET replyUserId = ${rows[i - 1].userId} WHERE userId = ${rows[i].userId}`
+      );
+    }
+  });
+});
+
 router.post("/send/:userId", (req, res) => {
   const { userId } = req.params;
   const { content, sendAt, previousId } = req.body;
