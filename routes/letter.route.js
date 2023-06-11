@@ -83,7 +83,7 @@ router.get("/reply/:userId", (req, res) => {
       (err, rows) => {
         if (rows.length < 1)
           return res.status(200).json({ isExist: false, message: "답장할 나야미가 없습니다." });
-        else return res.status(200).json({ isExist: true, data: rows });
+        else return res.status(200).json({ isExist: true, letter: rows[0] });
       }
     );
   }
