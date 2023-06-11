@@ -11,7 +11,7 @@ const yesterdayStr = `${yesterday.getFullYear()}-${
   yesterday.getMonth() + 1
 }-${yesterday.getDate()}`;
 
-schedule.scheduleJob("0 44 21 * * *", () => {
+schedule.scheduleJob("0 0 24 * * *", () => {
   db.query(`SELECT * FROM Letter WHERE DATEDIFF(sendAt, '${todayStr}') = 0`, (err, rows) => {
     db.query(
       `UPDATE Letter SET replyUserId = ${rows[rows.length - 1].userId} WHERE userId = ${
@@ -81,7 +81,6 @@ router.get("/reply/:userId", (req, res) => {
     db.query(
       `SELECT * FROM Letter WHERE replyUserId = ${userId} AND DATEDIFF(sendAt,'${yesterdayStr}') = 0;`,
       (err, rows) => {
-        console.log(yesterdayStr);
         if (rows.length < 1)
           return res.status(200).json({ isExist: false, message: "답장할 나야미가 없습니다." });
         else return res.status(200).json({ isExist: true, data: rows });
