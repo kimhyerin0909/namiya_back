@@ -5,6 +5,11 @@ const schedule = require("node-schedule");
 
 const today = new Date();
 const todayStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+const yesterdayStr = `${yesterday.getFullYear()}-${
+  yesterday.getMonth() + 1
+}-${yesterday.getDate()}`;
 
 schedule.scheduleJob("0 44 21 * * *", () => {
   db.query(`SELECT * FROM Letter WHERE DATEDIFF(sendAt, '${todayStr}') = 0`, (err, rows) => {
@@ -71,6 +76,18 @@ router.get("/today/:userId", (req, res) => {
 
 router.get("/reply/:userId", (req, res) => {
   const { userId } = req.params;
+
+  if (jwtController.checkJWT(res, req.headers.authorization.split(" ")[1], userId)) {
+    db.query(
+      `SELECT * FROM Letter WHERE replyUserId = ${userId} AND DATEDIFF(sendAt,'${yesterdayStr}') = 0;`,
+      (err, rows) => {
+        console.log(yesterdayStr);
+        if (rows.length < 1)
+          return res.status(200).json({ isExist: false, message: "답장할 나야미가 없습니다." });
+        else return res.status(200).json({ isExist: true, data: rows });
+      }
+    );
+  }
 });
 
 module.exports = router;
